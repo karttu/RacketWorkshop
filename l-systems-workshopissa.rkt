@@ -1,7 +1,6 @@
 #lang racket
 (require 2htdp/image)
 
-
   
 (define rules-for-simple-fractal-tree
   '(
@@ -35,6 +34,14 @@
       )
    )
 )
+
+(define puu1 (expand-by-rules '(0) rules-for-simple-fractal-tree))
+(define puu2 (expand-by-rules puu1 rules-for-simple-fractal-tree))
+(define puu3 (expand-by-rules puu2 rules-for-simple-fractal-tree))
+(define puu4 (expand-by-rules puu3 rules-for-simple-fractal-tree))
+(define puu5 (expand-by-rules puu4 rules-for-simple-fractal-tree))
+
+;; Kokeile: (turtle-tulkki puu4)
 
 (define (asteet-radiaaneiksi kulma) (/ (* pi kulma) 180))
 
@@ -70,8 +77,22 @@
                   )
                         
                 )
-;;                ((L) ...)
-;;                ((R) ...)
+                ((L) (loop kanvaasi
+                           (rest komennot)
+                           paikka
+                           (+ suunta (asteet-radiaaneiksi 45))
+                           (cons (cons paikka suunta) pino) ;; push paikka&pino
+                     )
+                )
+                ((R) (loop kanvaasi
+                           (rest komennot)
+                           (car (first pino)) ;; Pinon päällimmäisestä paikka
+                           (- (cdr (first pino)) ;; Pinon päällimmäisestä suunta
+                              (asteet-radiaaneiksi 45) ;; jota 45 oikealle.
+                           )
+                           (rest pino) ;; dropataan pinon päällimmäinen.
+                     )
+                )
                 (else ;; Tuntematon komento
                   (loop kanvaasi (rest komennot) paikka suunta pino)
                 )
