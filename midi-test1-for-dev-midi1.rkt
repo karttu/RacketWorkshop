@@ -1,3 +1,4 @@
+#lang racket
 
 (define out #f)
 
@@ -40,7 +41,7 @@
 
 (define (sublist lista from to+1) (list-head (list-tail lista from) (- to+1 from)))
 
-(define (euclidean_1_0_rhythm n-beats ones)
+(define (euclidean_1_0_rhythm ones n-beats) ;; Note that: n-ones <= n-beats
   (let ([zeros (- n-beats ones)])
    (let loop ([lists (append (make-list (min ones zeros) '(1 0))
                              (make-list (abs (- ones zeros)) (list (if (> ones zeros) 1 0)))
@@ -70,7 +71,7 @@
 )
 
 
-(define (euclidean_rhythm n-onsets n-beats) ;; Note n-onsets <= n-beats
+(define (euclidean_rhythm n-onsets n-beats) ;; Note that: n-onsets <= n-beats
   (let ([n-zeros (- n-beats n-onsets)])
    (let loop ([lists (append
                         (build-list (min n-onsets n-zeros) (lambda (i) (list (add1 i) 0)))
@@ -106,49 +107,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-(define asteroids_plus_lilith '(⚳ ⚴ ⚵ ⚶ ⚷ ⚸))
-
-;; 𝄞   𝄬 ♭ ♯ ♭ & 𝄫 𝄪 𝄲 𝄰 𝄱 & 𝄳
-
-
-(define (make-image x size color n-syms org-radius)
-  (cond 
-    [(string? x) (text x size color)]
-    [(symbol? x) (text (symbol->string x) size color)]
-    [(zero? x)   (text " " size color)]
-;;  [(number? x) (text (number->string x) size color)]
-    [(number? x) (text (symbol->string (list-ref asteroids_plus_lilith (- x 1))) size color)]
-    [(pair? x) (draw-circle-with-evenly-spaced-symbols (* 2 org-radius (sin (/ pi n-syms 2))) size x)]
-    [(image? x) x]
-  )
-)
-
-
-(define (draw-circle-with-evenly-spaced-symbols radius symsize symlista)
-   (let* ([n-syms (length symlista)]
-          [angle-delta (/ (+ pi pi) n-syms)]
-         )
-     (let loop ([angle 0]
-                [syms symlista]
-                [big-circle (underlay (circle (* 1.2 radius) "solid" "white") (circle radius "outline" "red"))]
-               )
-           (cond [(null? syms) big-circle]
-                 [else (loop (+ angle angle-delta)
-                             (rest syms) 
-                             (overlay/offset 
-                                  (make-image (first syms) symsize "black" n-syms radius)
-                                  (* radius (cos angle))
-                                  (* radius (sin angle))
-                                  big-circle 
-                             )
-                       )
-                 ]
-           )
-     )
-   )
-)
-
-
+;;;;; This stuff might be useful later:
 
 (define pentatonic_minor_C4_onward (map (lambda (p) (+ 60 p)) '(0 3 5 7 10 12 15 17)))
 
@@ -182,33 +141,15 @@
 )
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 (define (rol lista) (if (null? lista) lista (append (cdr lista) (list (car lista)))))
 
 ;; Entä ror?
 
 (define (deeprol lista) (if (not (pair? lista)) lista (rol (map deeprol lista)))) ;; Voiko rol:in laittaa toiseen paikkaan?
 
-(define (get-rotating-closure initial-lista once-every-nth-tick)
-  (let ([empty (empty-scene 10 10)]
-        [our-private-lista initial-lista]
-       )
-    (lambda (frametime)
-         (cond [(zero? (modulo frametime once-every-nth-tick))
-                  (let ([prevnote (ints->midinotes (first our-private-lista))])
-                    (midi-turn-off prevnote 127)
-                    (set! our-private-lista (deeprol our-private-lista))
-                    (midi-turn-on (ints->midinotes (first our-private-lista)) 127)
-                  )
-               ]
-         )
-;        (draw-circle-with-evenly-spaced-symbols 200 52 our-private-lista)
-         empty
-    )
-  )
-)
-
-
-(define (start tempo) (rtmidi-open-port out 1) (animate (get-rotating-closure (euclidean_1_0_rhythm 8 5) tempo)))
 
 (define (koke1 n-onsets n-beats pause) (kokeileuc n-onsets n-beats pause ints->midinotes))
 
