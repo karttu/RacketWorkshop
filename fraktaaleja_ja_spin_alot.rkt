@@ -1,34 +1,56 @@
 #lang racket
 (require 2htdp/image)
 
+;; Löytyy osoitteella: https://github.com/karttu/RacketWorkshop/blob/master/fraktaaleja_ja_spin_alot.rkt
+;; Aihe: fraktaalien ja muiden mielenkiintoisten kuvioiden piirtäminen, yksinkertaisilla rekursiivisilla ohjelmilla.
+;; Taso: alkeet.
+
+;; Esimerkit on lainattu dokumentista:
+;; http://docs.racket-lang.org/teachpack/2htdpimage-guide.html
+;; jossa myös selitetään funktiot above ja beside
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Sierpinskin kolmion piirto. Kokeile esimerkiksi: (sierpinski 7)
+
 
 (define (sierpinski n)
    (cond
-     ((zero? n) (triangle 2 "solid" "red"))
-     (else
+     [(zero? n) (triangle 2 "solid" "red")] ;; Jos ollaan saavuttu "nollatasolle" niin palautetaan kahden pikselin kokoinen kolmio
+     [else
         (define pienempi (sierpinski (- n 1)))
         (above pienempi (beside pienempi pienempi))
-     )
+     ]
    )
 )
 
 ;; Kopioitu täältä:
 ;; http://docs.racket-lang.org/teachpack/2htdpimage-guide.html#%28part._.Recursive_.Image_.Functions%29
+;; (ja modifioitu hiukan).
+
+;; Kokeile esimerkiksi: (sierpinski-carpet 5) tai (sierpinski-carpet 6)
+;; Kestää hetken.
 
 (define (sierpinski-carpet n)
     (cond
-      ((zero? n) (square 1 "solid" "black"))
-      (else
-       (local ((define c (sierpinski-carpet (- n 1)))
-               (define i (square (image-width c) "solid" "white"))
-              )
-         (above (beside c c c)
-                (beside c i c)
-                (beside c c c))
+      [(zero? n) (square 1 "solid" "black")] ;; Jos ollaan tultu "pohjalle", palautetaan vain musta piste.
+      [else ;; Muuten luodaan matto kahdeksaan kertaan kopioidusta pienemmästä vastaavasta:
+       (let* ([c (sierpinski-carpet (- n 1))] ;; Luodaan yhtä alemman/syvemmän tason (pienempi) fraktaalimatto.
+              [o (square (image-width c) "solid" "white")] ;; Tämä on keskelle tuleva samankokoinen tyhjä valkoinen neliö.
+             )
+          (above (beside c c c)
+                 (beside c o c) ;; Miten kuvio muuttuu, jos siirrät o:n keskeltä vaikkapa kulmaan?
+                 (beside c c c)
+          )
        )
-      )
+      ]
     )
 )
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Muita esimerkkejä, kuinka pienimuotoisella tuunaamiselle saa helposti
+;; mielenkiintoisia muotoja aikaiseksi.
+
 
 ;; Tästä lähdettiin liikkeelle:
 (define (joku-fraktaali0 n kulma)
@@ -55,6 +77,9 @@
 
 (define (plus-tai-miinus n) (if (odd? n) -1 1))
 
+;; Kokeile esimerkiksi: (joku-fraktaali1 6 17 "forest green")
+;; Tai: (joku-fraktaali1 7 3 "red") (Saat "virkatun ja virttyneen version" Sierpinskin kolmiosta).
+
 ;; Go wild!, vaihtele kulmaa jollakin tavalla:
 (define (joku-fraktaali1 n kulma väri)
    (cond
@@ -70,7 +95,8 @@
    )
 )
 
-;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (define (spin-alot kuva kulman-lisäys)
    (spin-more kuva kuva 0 kulman-lisäys)
@@ -98,10 +124,10 @@
 (define kolmio2 (rotate 60 (above ympyra2 (beside ympyra2 ympyra2))))
 
 ;; Kokeile:
-;; (spin-alot (beside (rectangle 250 2 "outline" (make-color 255 255 255 0)) kolmio2) 1)
-
 
 ;; (spin-alot (beside (rectangle 50 2 "outline" (make-color 255 255 255 0)) kolmio) 1)
 
 ;; (spin-alot (beside (rectangle 250 2 "outline" (make-color 255 255 255 0)) kolmio2) 1)
+
+(spin-alot (beside (rectangle 150 2 "outline" (make-color 255 255 255 0)) kolmio2) 1)
 
