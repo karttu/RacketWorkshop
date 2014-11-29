@@ -2,6 +2,23 @@
 (require 2htdp/universe)
 (require 2htdp/image)
 
+;;
+;; URL: https://github.com/karttu/RacketWorkshop/blob/master/l-systems.rkt
+;;
+;; Taso: Jo pidemmälle edistyneille, listafunktiot osattava.
+;;
+;; Aihe: L-systems. Katso esimerkiksi: http://fi.wikipedia.org/wiki/L-systeemi (hyvin abstrakti selitys)
+;;  tai englanniksi: http://en.wikipedia.org/wiki/L-system (hiukan maanläheisempi).
+;;
+;; Yleisempi teema: "Domain Specific Languages" (DSL), uutta näkökulmaa ohjelmien suunnitteluun, kokeneillekin ohjelmoijille.
+;;
+;; Tämä versio: toteuttaa useampia Wikipedia-sivulla http://en.wikipedia.org/wiki/L-system
+;; samoin ABOP kirjan ("The Algorithmic Beauty of Plants" http://algorithmicbotany.org/papers/#abop )
+;; ensimmäisessä luvussa (esimerkiksi sivulla 25) annettuja yksinkertaisia säännöstöjä.
+;; Lyhyempi ja yksinkertaisempi versio tästä: https://github.com/karttu/RacketWorkshop/blob/master/l-systems-workshopissa.rkt
+;;
+;; Copyright (C) 2014, Antti Karttunen
+;;
 
 
 (define (expand-by-rules symbols rules)
@@ -24,7 +41,7 @@
 ;; 
 
 ;; 
-;; 
+;; Erilaisia hauskoja Unicodesta löytyviä symboleja, mitä aluksi ajattelin käyttää PUSH ja POP -komentoina:
 ;; ⍕ ⍎
 
 ;; Other alternatives: ↖ & ↗, ↓ & ↑, ⏬ & ⏫, ⍒ & ⍋, ⍢ & ⍙, ⍥ & ⍜, ⍕ & ⍎, ⏁ & ⏂, ⍚  ⎏ & ⎐, ⚺ & ⚻, 入 & 出, ⛉ & ☖
@@ -43,6 +60,7 @@
                                  )
 )
 
+;; Tällä koodilla kasvavaa L-systeemi-puuta voisi animoida:
 ;; (animate (get-growing-tree-callback '(0) (lambda (syms) (expand-by-rules syms rules-for-simple-fractal-tree)) 28)
 
 (define (test-it ticks)
@@ -158,9 +176,12 @@
    )
 )
 
+;; Näytetään kasvi. Vertaa: http://en.wikipedia.org/wiki/L-system#Example_7:_Fractal_plant
+(plant25 6)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Vertailun vuoksi:
-;; Ihan erilailla tehty puunpiirto, "hard-coded":
+;; Ihan eri tavalla tehty puunpiirto, "hard-coded":
 
 (define (piirräpuu-apu kuva x1 y1 nyk-kulma syvyys kulman-muutos-vasemmalle kulman-muutos-oikealle)
     (cond ((zero? syvyys) kuva)

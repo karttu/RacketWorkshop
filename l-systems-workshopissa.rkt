@@ -1,11 +1,25 @@
 #lang racket
 (require 2htdp/image)
 
+;;
+;; URL: https://github.com/karttu/RacketWorkshop/blob/master/l-systems-workshopissa.rkt
+;;
+;; Taso: Jo pidemmälle edistyneille, listafunktiot osattava.
+;;
+;; Aihe: L-systems. Katso esimerkiksi: http://fi.wikipedia.org/wiki/L-systeemi (hyvin abstrakti selitys)
+;;  tai englanniksi: http://en.wikipedia.org/wiki/L-system (hiukan maanläheisempi).
+;;
+;; Yleisempi teema: "Domain Specific Languages" (DSL), uutta näkökulmaa ohjelmien suunnitteluun, kokeneillekin ohjelmoijille.
+;;
+;; Tämä versio: toteuttaa http://en.wikipedia.org/wiki/L-system#Example_2 :ssa annetun yksinkertaisen säännöstön.
+;;
+;; Copyright (C) 2014, Antti Karttunen
+;;
   
 (define rules-for-simple-fractal-tree
   '(
     (0   1 L 0 R 0) ;; 0 muuttuu kaikkialla sekvenssiksi 1 L 0 R 0
-    (1   1 1)      ;; 1 muuttuu kaikkialla sekvenssiksi 1 1
+    (1   1 1)       ;; 1 muuttuu kaikkialla sekvenssiksi 1 1
    )
 )
 
@@ -35,13 +49,16 @@
    )
 )
 
+;; Nämä testauksen vuoksi:
 (define puu1 (expand-by-rules '(0) rules-for-simple-fractal-tree))
 (define puu2 (expand-by-rules puu1 rules-for-simple-fractal-tree))
 (define puu3 (expand-by-rules puu2 rules-for-simple-fractal-tree))
 (define puu4 (expand-by-rules puu3 rules-for-simple-fractal-tree))
 (define puu5 (expand-by-rules puu4 rules-for-simple-fractal-tree))
+;; Esimerkiksi: 
+;; puu3 pitäisi olla lista: '(1 1 1 1 L 1 1 L 1 L 0 R 0 R 1 L 0 R 0 R 1 1 L 1 L 0 R 0 R 1 L 0 R 0)
 
-;; Kokeile: (turtle-tulkki puu4)
+;; Kokeile myös: (turtle-tulkki puu4)
 
 (define (asteet-radiaaneiksi kulma) (/ (* pi kulma) 180))
 
